@@ -81,13 +81,32 @@ public class EmployeeController {
 		ResponseEntity<Employee> response = new ResponseEntity<Employee>(empToBeAdded, headers, status);
 		return response;
 	}
+//	@PutMapping("/update-emp")
+//	public ResponseEntity<Employee> updateEmp(@RequestBody Employee employee, BindingResult result) {
+//		Employee updatedEmployee = employeeService.updateEmployee(employee);
+//		HttpHeaders headers = new HttpHeaders();
+//        headers.add("message", "Employee updated successfully!");
+//        return new ResponseEntity<>(updatedEmployee, headers, HttpStatus.OK);
+//	}
 	@PutMapping("/update-emp")
-	public ResponseEntity<Employee> updateEmp(@Valid @RequestBody Employee employee, BindingResult result) {
-		Employee updatedEmployee = employeeService.updateEmployee(employee);
-		HttpHeaders headers = new HttpHeaders();
-        headers.add("message", "Employee updated successfully!");
-        return new ResponseEntity<>(updatedEmployee, headers, HttpStatus.OK);
+	public ResponseEntity<?> updateEmp(@RequestBody Employee employee, BindingResult result) {
+	    if (result.hasErrors()) {
+	        // Handle validation errors
+	        return new ResponseEntity<>(result.getAllErrors(), HttpStatus.BAD_REQUEST);
+	    }
+
+	    try {
+	        Employee updatedEmployee = employeeService.updateEmployee(employee);
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("message", "Employee updated successfully!");
+	        return new ResponseEntity<>(updatedEmployee, headers, HttpStatus.OK);
+	    } catch (IllegalArgumentException e) {
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.add("error", e.getMessage());
+	        return new ResponseEntity<>(headers, HttpStatus.BAD_REQUEST);
+	    }
 	}
+
 	@DeleteMapping("/delete-emp/{eid}")
 	public ResponseEntity<Void> deleteEmp(@PathVariable(name = "eid") String employeeId) {
 	    Employee isDeleted = employeeService.deleteEmployee(employeeId);

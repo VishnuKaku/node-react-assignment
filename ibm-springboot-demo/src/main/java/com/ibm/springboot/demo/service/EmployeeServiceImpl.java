@@ -69,20 +69,32 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee updateEmployee(Employee employee) {
-        LOG.info("Updating employee: {}", employee);
-        Employee emp = employeeRepository.findById(employee.getEmployeeId()).orElse(null);
-        
-        if (employee.getFirstName() != null)
-			emp.setFirstName(employee.getFirstName());
+	    if (employee.getEmployeeId() == null) {
+	        throw new IllegalArgumentException("Employee ID must not be null");
+	    }
+	    
+	    LOG.info("Updating employee: {}", employee);
+	    Employee emp = employeeRepository.findById(employee.getEmployeeId()).orElse(null);
+	    
+	    if (emp == null) {
+	        throw new IllegalArgumentException("No employee found with the given ID");
+	    }
 
-		if (employee.getSalary() != null)
-			emp.setSalary(employee.getSalary());
-		
-		if (employee.getEmail() != null)
-			emp.setEmail(employee.getEmail());
-        
-        return employeeRepository.save(emp);
-    }
+	    if (employee.getFirstName() != null) {
+	        emp.setFirstName(employee.getFirstName());
+	    }
+
+	    if (employee.getSalary() != null) {
+	        emp.setSalary(employee.getSalary());
+	    }
+	    
+	    if (employee.getEmail() != null) {
+	        emp.setEmail(employee.getEmail());
+	    }
+	    
+	    return employeeRepository.save(emp);
+	}
+
 	@Override
 	public Employee deleteEmployee(String employeeId) {
 		LOG.info(employeeId);
